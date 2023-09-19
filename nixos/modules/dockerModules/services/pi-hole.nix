@@ -6,7 +6,7 @@ let
   docker = "${ config.virtualisation.docker.package }/bin/docker";
   service = "pi-hole";
   IP4 = "252";
-  cfg = config.x3framework.docker.pi-hole;
+  cfg = config.x3framework.docker.services.pi-hole;
   mkIp = config.lib.x3framework.mkIPFromSubnetAndSuffix;
   SERVICE_IP = mkIp cfg.network.subnetBase IP4;
 
@@ -73,7 +73,7 @@ let
   };
 in
 {
-  options.x3framework.docker.pi-hole = with lib ;{
+  options.x3framework.docker.services.pi-hole = with lib ;{
     enable = mkEnableOption "" // {
       description = ''
         Whether to enable the container task. Enable this if the configuration

@@ -8,7 +8,7 @@ let
   IP4 = "93";
   mkIp = config.lib.x3framework.mkIPFromSubnetAndSuffix;
   SERVICE_IP = mkIp cfg.network.subnetBase IP4;
-  cfg = config.x3framework.docker.afterLogicWebmail;
+  cfg = config.x3framework.docker.services.afterLogicWebmail;
 
   composeFile = pkgs.writeTextFile {
     name = "${service}-compose.yml";
@@ -46,7 +46,7 @@ let
   };
 in
 {
-  options.x3framework.docker.afterLogicWebmail = with lib ;{
+  options.x3framework.docker.services.afterLogicWebmail = with lib ;{
     enable = mkEnableOption "" // {
       description = ''
         Whether to enable the container task. Enable this if the configuration

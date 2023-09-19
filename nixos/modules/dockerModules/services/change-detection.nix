@@ -9,7 +9,7 @@ let
   mkIp = config.lib.x3framework.mkIPFromSubnetAndSuffix;
   SERVICE_IP = mkIp cfg.network.subnetBase IP4;
   x3cfg = config.x3framework;
-  cfg = config.x3framework.docker.changeDetection;
+  cfg = config.x3framework.docker.services.changeDetection;
 
   localFirewallCommands = cf: x: /* bash */ ''
     # changedetection
@@ -106,7 +106,7 @@ let
   };
 in
 {
-  options.x3framework.docker.changeDetection = with lib ;{
+  options.x3framework.docker.services.changeDetection = with lib ;{
     enable = mkEnableOption "" // {
       description = ''
         Whether to enable the container task. Enable this if the configuration
