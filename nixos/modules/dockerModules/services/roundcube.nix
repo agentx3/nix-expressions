@@ -6,7 +6,7 @@ let
   docker = "${ config.virtualisation.docker.package }/bin/docker";
   service = "roundcube";
   IP4 = "101";
-  cfg = config.x3framework.docker.roundcube;
+  cfg = config.x3framework.docker.services.roundcube;
   mkIp = config.lib.x3framework.mkIPFromSubnetAndSuffix;
   SERVICE_IP = mkIp cfg.network.subnetBase IP4;
   # DATA_DIR = "/data/${SERVICE}";
@@ -55,7 +55,7 @@ let
   };
 in
 {
-  options.x3framework.docker.roundcube = {
+  options.x3framework.docker.services.roundcube = {
     enable = mkEnableOption "" // {
       description = ''
         Whether to enable the container task. Enable this if the configuration
@@ -101,7 +101,7 @@ in
       description = mdDoc "Additional configuration to pass to the roundcube php config file";
     };
     extraOauthConfigFile = mkOption {
-      type = types.path;
+      type = types.oneOf [ types.path types.str ];
       default = "";
       description = mdDoc "Additional configuration file to pass to the roundcube oauth config file";
     };
