@@ -6,6 +6,28 @@ The highlight of this collection is `x3framework.docker` related settings. My ex
 
 `x3framework.docker.services` contains modules that create docker compose files and a helper command. Each service created via this method will be located on a network defined `x3framework.docker.network`. The containers and the network are controlled with systemd service units. This allows for some pretty powerful stuff, e.g. if you modify the docker network, it will spin down all connected containers, destroy the existing network, re-create it with the new configurations, and spin back up the containers on the new networks.
 
+## Basic Usage
+```nix
+{
+    inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05"
+    inputs.x3framework.url = "github:agentx3/nix-expressions";
+    outputs = { x3framework, nixpkgs, ... }:
+    {
+        # ...
+        foo = nixpkgs.lib.nixosSystem {
+            system = "your-system";
+        }
+        modules = [
+            x3framework.nixosModules.${system}.default
+            # default includes both of these
+            # x3framework.nixosModules.${system}.dockerModules
+            # x3framework.nixosModules.${system}.serviceModules
+        ];
+    };
+}
+```
+
+
 ## Why
 This shares a lot of capabilities with `virtualisation.oci-containers`, in fact, I would probably even recommend using that instead in most cases. I've decided to use this for certain applications rather than `virtualisation.oci-containers` mainly in order to:
  * Support my custom implementation of binding containers to a docker network. 
