@@ -111,7 +111,7 @@ let
           restart = "unless-stopped";
           container_name = "${service}-db";
           image = "mysql:8.0";
-          command = "--max-allowed-packet=64MB";
+          command = "--max-allowed-packet=64MB --secure-file";
           env_file = cfg.envFile;
           environment = { } // cfg.environment;
           networks."${cfg.network.name}".ipv4_address = DATABASE_IP;
@@ -158,15 +158,6 @@ in
       type = types.str;
       description = mdDoc "Domain name of the matomo server";
     };
-    dataDir = mkOption {
-      type = types.str;
-      default = "/var/lib/x3framework/${service}";
-      description = mdDoc "Directory to store the data in";
-    };
-    host = mkOption {
-      type = types.str;
-      description = mdDoc "Location of the host mail server";
-    };
     environment = mkOption {
       type = types.attrs;
       default = { };
@@ -175,7 +166,19 @@ in
     envFile = mkOption {
       type = types.str;
       default = ''""'';
-      description = mdDoc "Environment file for the docker container.";
+      description = mdDoc ''
+        Environment file for the docker container. It should contain these variables:
+        MYSQL_ROOT_PASSWORD=
+        MYSQL_PASSWORD=
+        MYSQL_DATABASE=
+        MYSQL_USER=
+        MATOMO_DATABASE_ADAPTER=
+        MATOMO_DATABASE_TABLES_PREFIX=
+        MATOMO_DATABASE_USERNAME=
+        MATOMO_DATABASE_PASSWORD=
+        MATOMO_DATABASE_DBNAME=
+
+      '';
     };
     network = mkOption {
       type = config.lib.x3framework.types.x3NetworkType;
@@ -236,4 +239,5 @@ in
     };
   };
 }
+
 
