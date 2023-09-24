@@ -1,5 +1,5 @@
 {
-  description = "NixOS configuration";
+  description = "A collection of my NixOS modules and packages, notably for Docker compose based services.";
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-23.05";
@@ -13,7 +13,7 @@
     }:
     flake-utils.lib.eachDefaultSystem (system:
     {
-      nixosModules = rec {
+      nixosModules = {
         default = {
           imports = [
             ./nixos/modules

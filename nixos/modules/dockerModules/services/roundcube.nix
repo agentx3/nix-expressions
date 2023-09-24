@@ -1,9 +1,6 @@
 { config, lib, pkgs, ... }:
-with lib;
-
 let
-
-  docker = "${ config.virtualisation.docker.package }/bin/docker";
+  inherit (lib) mkEnableOption mkOption mkIf types mdDoc;
   service = "roundcube";
   IP4 = "101";
   cfg = config.x3framework.docker.services.roundcube;
@@ -12,9 +9,7 @@ let
   # DATA_DIR = "/data/${SERVICE}";
   mkExtraConfig = extraConfig: pkgs.writeTextFile {
     name = "${service}-extra-config.inc.php";
-    text = ''
-      ${ extraConfig }
-    '';
+    text = extraConfig;
   };
   composeFile = pkgs.writeTextFile {
     name = "${service}-compose.yml";
@@ -24,8 +19,10 @@ let
         roundcube = {
           restart = "unless-stopped";
           container_name = "${service}";
-          image = "roundcube/roundcubemail";
+          image = cfg.image;
           environment = {
+            # See https://github.com/roundcube/roundcubemail-docker/blob/master/README.md
+            # for explanations of the environment variables
             ROUNDCUBEMAIL_DEFAULT_HOST = cfg.host;
             ROUNDCUBEMAIL_DEFAULT_PORT = toString cfg.port;
             ROUNDCUBEMAIL_SMTP_SERVER = cfg.smtpServer;
@@ -67,11 +64,6 @@ in
       default = SERVICE_IP;
       description = mdDoc "IP address of the container. Needs to be in subnet of the assigned network";
     };
-
-    domain = mkOption {
-      type = types.str;
-      description = mdDoc "Domain name of the roundcube server";
-    };
     smtpServer = mkOption {
       type = types.str;
       description = mdDoc "Location of the smtp server";
@@ -89,6 +81,16 @@ in
       type = types.int;
       default = 587;
       description = mdDoc "Port to use for SMTP. Usually 465 for forced TLS, 587 for STARTTLS";
+    };
+    image = mkOption {
+      type = types.str;
+      description = mdDoc "Image to use for the container";
+      default = "roundcube/roundcubemail";
+    };
+    envFile = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      description = mdDoc "Path to an environment file for the docker container.";
     };
     environment = mkOption {
       type = types.attrs;
@@ -121,7 +123,7 @@ in
 
     x3framework.helper.${service}.composeFile = composeFile;
 
-    systemd.services.roundcube-x3framework = import ./mkSystemdUnit.nix { inherit config docker service composeFile; network = cfg.network; };
+    systemd.services."${service}-x3framework" = config.lib.x3framework.mkSystemdUnit { inherit config service composeFile; network = cfg.network; };
 
   };
 }

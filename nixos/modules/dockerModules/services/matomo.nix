@@ -3,7 +3,6 @@ with lib;
 
 let
 
-  docker = "${ config.virtualisation.docker.package }/bin/docker";
   service = "matomo";
   NGINX_IP4 = "120";
   IP4 = "121";
@@ -111,7 +110,7 @@ let
           restart = "unless-stopped";
           container_name = "${service}-db";
           image = "mysql:8.0";
-          command = "--max-allowed-packet=64MB --secure-file";
+          command = "--max-allowed-packet=64MB  --local-infile=ON";
           env_file = cfg.envFile;
           environment = { } // cfg.environment;
           networks."${cfg.network.name}".ipv4_address = DATABASE_IP;
@@ -196,7 +195,7 @@ in
 
     x3framework.helper.${service}.composeFile = composeFile;
 
-    systemd.services.matomo-x3framework = import ./mkSystemdUnit.nix { inherit config docker service composeFile; network = cfg.network; };
+    systemd.services.matomo-x3framework = config.lib.x3framework.mkSystemdUnit { inherit config service composeFile; network = cfg.network; };
     users.users.nginx.extraGroups = [ "82" ];
 
     services.nginx.virtualHosts.${service} = {

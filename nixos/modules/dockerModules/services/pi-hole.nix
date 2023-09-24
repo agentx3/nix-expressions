@@ -183,7 +183,7 @@ in
         };
       };
     # Define docker-compose.yml and Dockerfile
-    systemd.services."${service}-x3framework" = mkIf cfg.enableSystemd (import ./mkSystemdUnit.nix { inherit config docker service composeFile; network = cfg.network; });
+    systemd.services."${service}-x3framework" = mkIf cfg.enableSystemd (config.lib.x3framework.mkSystemdUnit { inherit config service composeFile; network = cfg.network; });
   };
 }
 

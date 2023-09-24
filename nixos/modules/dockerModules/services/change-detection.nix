@@ -3,7 +3,6 @@
 let
   inherit (lib) mkIf strings mkDefault;
 
-  docker = "${ config.virtualisation.docker.package }/bin/docker";
   service = "changedetection";
   IP4 = "33";
   mkIp = config.lib.x3framework.mkIPFromSubnetAndSuffix;
@@ -238,7 +237,7 @@ in
     };
     # Define docker-compose.yml and Dockerfile
     systemd.services."${service}-x3framework" = mkIf cfg.enableSystemd (
-      import ./mkSystemdUnit.nix { inherit config docker service composeFile; network = cfg.network; }
+      config.lib.x3framework.mkSystemdUnit { inherit config service composeFile; network = cfg.network; }
     );
   };
 }

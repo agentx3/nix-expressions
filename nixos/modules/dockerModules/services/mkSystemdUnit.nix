@@ -1,4 +1,7 @@
-{ config, service, docker, composeFile, network }:
+{ config, service, composeFile, network }:
+let
+  docker = "${ config.virtualisation.docker.package }/bin/docker";
+in
 {
   description = "This service unit controls the start and stop of the roundcube container.";
   wantedBy = [ "multi-user.target" ];

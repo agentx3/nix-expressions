@@ -1,9 +1,8 @@
 { config, lib, pkgs, ... }:
 
 let
-  inherit (lib) mkIf strings;
+  inherit (lib) mkIf;
 
-  docker = "${ config.virtualisation.docker.package }/bin/docker";
   service = "afterlogic-webmail-pro";
   IP4 = "93";
   mkIp = config.lib.x3framework.mkIPFromSubnetAndSuffix;
@@ -23,7 +22,7 @@ let
           ];
           depends_on = [ "db" ];
           environment = cfg.environment;
-          env_file = cfg.env_file;
+          env_file = cfg.envFile;
           restart = cfg.restart;
           networks.${cfg.network.name}.ipv4_address = SERVICE_IP;
           volumes = [ "${service}-web-data:/var/www/html/data" ];
@@ -83,7 +82,7 @@ in
       description = mdDoc "Environment variables for the docker container.";
       default = { };
     };
-    env_file = mkOption {
+    envFile = mkOption {
       type = types.str;
       default = ''""'';
       description = mdDoc "Environment file for the docker container.";
@@ -107,7 +106,7 @@ in
 
     # Define docker-compose.yml and Dockerfile
     systemd.services."${service}-x3framework" = mkIf cfg.enableSystemd (
-      import ./mkSystemdUnit.nix { inherit config docker service composeFile; network = cfg.network; }
+      config.lib.x3framework.mkSystemdUnit { inherit config service composeFile; network = cfg.network; }
     );
   };
 }
