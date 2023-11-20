@@ -126,7 +126,7 @@ in
       description = mdDoc "Environment variables for the docker container. Recommended are TZ, WEBPASSWORD_FILE, FTLCONF_LOCAL_IPV4. More info at https://github.com/pi-hole/docker-pi-hole .";
     };
     network = mkOption {
-      type = lib.x3framework.types.x3NetworkType;
+      type = config.lib.x3framework.types.x3NetworkType;
       default = config.x3framework.docker.networks.default;
       description = mdDoc "The docker network to use for the container";
     };
