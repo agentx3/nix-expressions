@@ -176,11 +176,11 @@ in
         BASE_URL = "http://${cfg.host}:${toString cfg.hostPort}";
 
       };
-      network = mkOption {
-        type = config.lib.x3framework.types.x3NetworkType;
-        default = config.x3framework.docker.networks.default;
-        description = mdDoc "The docker network to use for the container";
-      };
+    };
+    network = mkOption {
+      type = config.lib.x3framework.types.x3NetworkType;
+      default = config.x3framework.docker.networks.default;
+      description = mdDoc "The docker network to use for the container";
     };
 
 
@@ -188,7 +188,7 @@ in
   config = mkIf cfg.enable {
     assertions = [
       {
-        assertion = x3cfg.dockerNetwork.enable;
+        assertion = cfg.network.enable;
         message = "The framework's dockerNetwork must be enabled to use this";
       }
       (mkIf cfg.enableNginxServer {
