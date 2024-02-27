@@ -5,5 +5,6 @@
     ./change-detection.nix
     ./afterlogic-webmail-pro.nix
     ./matomo.nix
+    ./kanboard.nix
   ];
 }
