@@ -22,6 +22,8 @@ in
   };
   requires = [ "docker.service" "docker-network-${network.name}.service" ];
   after = [ "network.target" "docker.service" "docker-network-${network.name}.service" ];
+  bindsTo = [ "docker-network-${network.name}.service" ];
+  partOf = [ "docker-network-${network.name}.service" ];
   script = /* bash */ ''
     compose="${composeFile}"
     command="${docker} compose -f $compose -p ${service}"
