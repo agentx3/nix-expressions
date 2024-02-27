@@ -7,21 +7,15 @@ let
   IP4 = "33";
   mkIp = config.lib.x3framework.mkIPFromSubnetAndSuffix;
   SERVICE_IP = mkIp cfg.network.subnetBase IP4;
-  x3cfg = config.x3framework;
   cfg = config.x3framework.docker.services.changeDetection;
 
   localFirewallCommands = cf: x: /* bash */ ''
     # changedetection
-    iptables ${x} INPUT -p udp --dport ${toString cf.hostPort} -s ${cf.LANSubnet} -j ACCEPT
-    iptables ${x} INPUT -p tcp --dport ${toString cf.hostPort} -s ${cf.LANSubnet} -j ACCEPT
-
-    # Deny all other DNS requests
-    iptables ${x} INPUT -p udp --dport ${toString cf.hostPort} -j DROP
-    iptables ${x} INPUT -p tcp --dport ${toString cf.hostPort} -j DROP
+    iptables ${x} nixos-fw -p udp --dport ${toString cf.hostPort} -s ${cf.LANSubnet} -j nixos-fw-accept
+    iptables ${x} nixos-fw -p tcp --dport ${toString cf.hostPort} -s ${cf.LANSubnet} -j nixos-fw-accept
   '';
   extraFirewallCommands = c: (localFirewallCommands c "-A");
-  cleanupFirewallCommands = c: (localFirewallCommands c "-D");
-  firewallCommands = cf: { extraCommands = extraFirewallCommands cf; extraStopCommands = cleanupFirewallCommands cf; };
+  firewallCommands = cf: { extraCommands = extraFirewallCommands cf; };
 
   playwrightType = lib.types.submodule ({ ... }: with lib.types; {
     options = with lib;{

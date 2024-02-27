@@ -13,30 +13,15 @@ let
   localFirewallCommands = cf: X: /* bash */ ''
     # Only allow local IPs to access the DNS and its upstream
     # pihole
-    iptables ${X} INPUT -p udp --dport 53 -s ${cf.LANSubnet} -j ACCEPT
-    iptables ${X} INPUT -p tcp --dport 53 -s ${cf.LANSubnet} -j ACCEPT
-    iptables ${X} INPUT -p udp --dport 53 -s ${cfg.network.subnetBase}/${cfg.network.subnetMaskLength} -j ACCEPT
-    iptables ${X} INPUT -p tcp --dport 53 -s ${cfg.network.subnetBase}/${cfg.network.subnetMaskLength} -j ACCEPT
-    # pihole interface
-    iptables ${X} INPUT -p udp -s ${cf.LANSubnet} --dport ${toString cf.hostPort} -j ACCEPT
-    iptables ${X} INPUT -p tcp -s ${cf.LANSubnet} --dport ${toString cf.hostPort} -j ACCEPT
-
-    # Deny all other DNS requests
-    iptables ${X} INPUT -p udp --dport 53 -j DROP
-    iptables ${X} INPUT -p tcp --dport 53 -j DROP
-    iptables ${X} INPUT -p udp --dport ${toString cf.hostPort} -j DROP
-    iptables ${X} INPUT -p tcp --dport ${toString cf.hostPort} -j DROP
+    iptables ${X} nixos-fw -p udp --dport 53 -s ${cf.LANSubnet} -j nixos-fw-accept
+    iptables ${X} nixos-fw -p udp --dport 53 -s ${cfg.network.subnetBase}/${cfg.network.subnetMaskLength} -j nixos-fw-accept
+    iptables ${X} nixos-fw -p tcp --dport 53 -s ${cfg.network.subnetBase}/${cfg.network.subnetMaskLength} -j nixos-fw-accept
+    # pihole web interface
+    iptables ${X} nixos-fw -p udp -s ${cf.LANSubnet} --dport ${toString cf.hostPort} -j nixos-fw-accept
+    iptables ${X} nixos-fw -p tcp -s ${cf.LANSubnet} --dport ${toString cf.hostPort} -j nixos-fw-accept
   '';
-  dockerFirewallCommands = cf: X: /* bash */ ''
-    # This is to prevent external access of the DNS
-    iptables ${X} DOCKER-USER -p udp --dport 53 -j DROP
-    iptables ${X} DOCKER-USER -p tcp --dport 53 -j DROP
-    iptables ${X} DOCKER-USER -p udp --dport 53 -s ${cf.LANSubnet} -j ACCEPT
-    iptables ${X} DOCKER-USER -p tcp --dport 53 -s ${cf.LANSubnet} -j ACCEPT
-  '';
-  extraFirewallCommands = c: (localFirewallCommands c "-A") + (dockerFirewallCommands c "-I");
-  cleanupFirewallCommands = c: (localFirewallCommands c "-D") + (dockerFirewallCommands c "-D");
-  firewallCommands = cf: { extraCommands = extraFirewallCommands cf; extraStopCommands = cleanupFirewallCommands cf; };
+  extraFirewallCommands = c: (localFirewallCommands c "-A");
+  firewallCommands = cf: { extraCommands = extraFirewallCommands cf; };
 
   composeFile = pkgs.writeTextFile {
     name = "${service}-compose.yml";
