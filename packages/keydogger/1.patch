@@ -1,5 +1,5 @@
 diff --git a/Makefile b/Makefile
-index 79d56d7..71a6635 100644
+index cce7640..8f5aeeb 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,5 +1,5 @@
@@ -18,6 +18,17 @@ index 79d56d7..71a6635 100644
  	gcc -DDEBUG_MODE=0 -DDAEMON_NAME=\"$(DAEMON_NAME)\" -w keydogger.c -o keydogger
  
  .PHONY: dependency-check
+@@ -48,7 +48,9 @@ viz:
+ .PHONY: clean
+ clean:
+ 	-rm *.o > /dev/null 2>&1 || true
+-	-rm keydogger -f > /dev/null 2>&1 || true
++	-rm keydogger > /dev/null 2>&1 || true
+ 	-rm callgrind* > /dev/null 2>&1 || true
+ 	-rm vgcore* > /dev/null 2>&1 || true
+ 	-rm *.out > /dev/null 2>&1 || true
++
++
 diff --git a/keydogger.c b/keydogger.c
 index 70ba5ac..5136ca8 100644
 --- a/keydogger.c

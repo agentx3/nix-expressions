@@ -8,8 +8,8 @@
   src = fetchFromGitHub {
     owner = "jarusll";
     repo = "keydogger";
-    rev = "781bbcd328fe8ff1fff237248922780ea0128dbf";
-    hash = "sha256-XTwkvkTJzgnEmBhW0IqmEKshcOf/SPBU2tMV7BDD0YE=";
+    rev = "5ffd6790f3d3c8416f7d25ae890e09d9c92034b6";
+    hash = "sha256-+JyEdnT02K7TIxxvvdd4/JLkm/SX5bEMYVjAPjSDUwU=";
   };
   strictDeps = true;
   buildInputs = [ wl-clipboard ];
