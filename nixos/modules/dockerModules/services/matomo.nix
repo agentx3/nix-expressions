@@ -153,6 +153,11 @@ in
       default = SERVICE_IP;
       description = mdDoc "IP address of the container";
     };
+    nginxIp = mkOption {
+      type = types.str;
+      default = NGINX_IP;
+      description = mdDoc "IP address of the container";
+    };
     domain = mkOption {
       type = types.str;
       description = mdDoc "Domain name of the matomo server";
@@ -196,46 +201,6 @@ in
     x3framework.helper.${service}.composeFile = composeFile;
 
     systemd.services.matomo-x3framework = config.lib.x3framework.mkSystemdUnit { inherit config service composeFile; network = cfg.network; };
-    users.users.nginx.extraGroups = [ "82" ];
-
-    services.nginx.virtualHosts.${service} = {
-      listen = [
-        {
-          addr = "0.0.0.0";
-          port = 443;
-          ssl = true;
-        }
-        {
-          addr = "[::]";
-          port = 443;
-          ssl = true;
-        }
-      ];
-      http2 = true;
-      forceSSL = true;
-      serverName = cfg.domain;
-      sslCertificate = "/etc/letsencrypt/live/${cfg.domain}/fullchain.pem";
-      sslCertificateKey = "/etc/letsencrypt/live/${cfg.domain}/privkey.pem";
-      sslTrustedCertificate = "/etc/letsencrypt/live/${cfg.domain}/chain.pem";
-      locations = {
-        "/" = {
-          extraConfig = /*nginx*/''
-            proxy_pass               http://${NGINX_IP}:80;
-            proxy_http_version       1.1;
-            proxy_set_header         Upgrade $http_upgrade;
-            proxy_set_header         Connection "Upgrade";
-            proxy_set_header         Host $host;
-            proxy_set_header         X-Real-IP $remote_addr;
-            proxy_set_header         X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header         X-Forwarded-Proto $scheme;
-            proxy_set_header         X-Forwarded-Host $host;
-            proxy_set_header         X-Forwarded-Server $host;
-            proxy_set_header         X-Forwarded-Port $server_port;
-          '';
-
-        };
-      };
-    };
   };
 }
 
